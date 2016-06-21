@@ -146,9 +146,9 @@ backend_connection_timeout = "0"
 
 
 [servers.sample]
-bind = "localhost:3000"
+bind = "0.0.0.0:80"
 protocol = "tcp"
-balance = "weight"
+balance = "roundrobin"
 
 max_connections = 10
 client_idle_timeout = "5s"
@@ -165,8 +165,7 @@ backend_connection_timeout = "2s"
   [servers.sample.discovery]
   kind = "static"
   static_list = [
-    "localhost:8000 weight=1",
-    "localhost:8001 weight=2"
+    "localhost:8000 weight=1",   #webserver1
   ]
 
 
