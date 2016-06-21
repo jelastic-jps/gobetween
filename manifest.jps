@@ -82,8 +82,8 @@
             "nodeGroup": "bl",
             "commands": [
               "mkdir -p /etc/gobetween/conf/",
-              "wget -q https://goo.gl/R2Yjz9 -O  /etc/gobetween/conf/gobetween.toml",
-              "wget -q https://goo.gl/R2Yjz9 -O  /root/lb_manager.sh",
+              "wget -q https://goo.gl/QFm8jN -O  /etc/gobetween/conf/gobetween.toml",
+              "wget -q https://goo.gl/qTiOpq -O  /root/lb_manager.sh",
               "chmod +x /root/lb_manager.sh"
             ]
           }
