@@ -1,0 +1,96 @@
+{
+  "jpsType": "update",
+  "application": {
+    "name": "GoBetween",
+    "homepage": "https://github.com/yyyar/gobetween",
+    "description": "Advanced Load Balancer, designed for Docker",
+    "logo": "https://raw.githubusercontent.com/yyyar/gobetween/master/logo.png",
+    "env": {
+      "topology": {
+        "nodes": [
+          {
+            "nodeType": "docker",
+            "cloudlets": 16,
+            "count": 1,
+            "nodeGroup": "bl",
+            "docker": {
+              "image": "yyyar/gobetween"
+            }
+          }
+        ]
+      },
+      "onAfterScaleOut[nodeGroup:cp]": {
+        "call": [
+          "addClusterMembers"
+        ]
+      },
+      "onAfterScaleIn[nodeGroup:cp]": {
+        "forEach(event.response.nodes)": {
+          "execCmd": {
+            "nodeGroup": "bl",
+            "commands": [
+              "echo /root/lb_manager.sh --removehost ${@i.intIP}"
+            ]
+          }
+        }
+      }
+    },
+    "onInstall": {
+      "call": [
+        "add-lb-layer",
+        "inject-configs",
+        "addClusterMembers"
+      ]
+    },
+    "procedures": [
+      {
+        "id": "addClusterMembers",
+        "onCall": {
+          "forEach(nodes.cp)": {
+            "execCmd": {
+              "nodeGroup": "bl",
+              "commands": [
+                "echo /root/lb_manager.sh --addhosts ${@i.intIP}"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": "add-lb-layer",
+        "onCall": [
+          {
+            "addNodes": {
+              "nodeType": "docker",
+              "cloudlets": 16,
+              "dockerName": "yyyar/gobetween",
+              "dockerTag": "latest",
+              "displayName": "LoadBalancer",
+              "nodeGroup": "bl",
+              "metadata": {
+                "layer": "bl"
+              }
+            }
+          }
+        ]
+      },
+            {
+        "id": "inject-configs",
+        "onCall": [
+          {
+           "execCmd": {
+            "nodeGroup": "bl",
+            "commands": [
+              "mkdir -p /etc/gobetween/conf/",
+              "wget -q https://goo.gl/R2Yjz9 -O  /etc/gobetween/conf/gobetween.toml",
+              "wget -q https://goo.gl/R2Yjz9 -O  /root/lb_manager.sh",
+              "chmod +x /root/lb_manager.sh"
+            ]
+          }
+          }
+        ]
+      }
+
+    ]
+  }
+}
