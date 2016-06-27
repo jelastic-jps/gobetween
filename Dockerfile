@@ -1,3 +1,4 @@
+#
 FROM yyyar/gobetween
 
 RUN mkdir -p /etc/gobetween/conf
